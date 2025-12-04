@@ -49,7 +49,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.REPOSITORY_OWNER }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=sha,format=sha-${{shorthash}}
+            # SOLUCIÓN: Usamos 'short' como palabra clave de formato interno de la acción
+            type=sha,format=sha-{short} 
       
       # --- 3. BUILD Y PUSH DE LA IMAGEN ---
       - name: Build and push Docker image to GHCR
@@ -68,6 +69,7 @@ jobs:
         run: |
           # 1. Definir variables de build
           # Extraemos el tag SHA de la lista de tags generados
+          # Ahora buscamos el tag que empiece por 'sha-' (ej. sha-a0b1c2d)
           SHA_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep 'sha-' | head -n 1)
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
